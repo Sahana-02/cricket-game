@@ -1,14 +1,5 @@
-import {
-  Col,
-  Container,
-  Row,
-  Image,
-  Form,
-  Button,
-  Modal
-} from 'react-bootstrap'
-import { useState, useEffect, useContext } from 'react'
-import { CommentaryContext } from '../context/CommentaryContext'
+import { Col, Container, Row, Image, Form, Button } from 'react-bootstrap'
+import { useState, useEffect } from 'react'
 import {
   updateRuns,
   updateBallingCards,
@@ -22,128 +13,81 @@ import {
 } from '../redux/action'
 import { useDispatch, useSelector } from 'react-redux'
 import CricketImg from '../assets/images/cricket-black512.png'
-export default function Match () {
+import cricketData from '../assets/cricketData/cricketData.json'
+import { commentsObj } from '../utils/comments'
+import { declareWinner } from '../utils/winner'
+import { runsOptions } from '../utils/runs'
+const Match = () => {
   const dispatch = useDispatch()
   const [ballType, setBallType] = useState('')
   const [batting, setBatting] = useState('')
   const [shotType, setShotType] = useState('')
+  const [commentary, setCommentary] = useState('')
   const overs = useSelector((state) => state.overs)
   const runs = useSelector((state) => state.runs)
   const wickets = useSelector((state) => state.wickets)
   const target = useSelector((state) => state.target)
   const balls = useSelector((state) => state.balls)
-  const { commentary, setCommentary } = useContext(CommentaryContext)
-  const [showSuccessModal, setSuccessModal] = useState(false)
   const winner = useSelector((state) => state.winner)
-  const ballingCards = [
-    { value: '', label: 'Select Ball Type' },
-    { value: 'bouncer', label: 'Bouncer' },
-    { value: 'outswinger', label: 'Outswinger' },
-    { value: 'offcutter', label: 'Off Cutter' },
-    { value: 'yorker', label: 'Yorker' },
-    { value: 'offbreak', label: 'Off Break' },
-    { value: 'inswinger', label: 'Inswinger' },
-    { value: 'legcutter', label: 'Leg Cutter' },
-    { value: 'slowballer', label: 'Slower Ball' },
-    { value: 'pace', label: 'Pace' },
-    { value: 'doosra', label: 'Doosra' }
-  ]
-
+  const ballingCards = cricketData.ballingCards
   const [filteredBattingCards, setFilteredBattingCards] = useState([])
+  const shotTimings = cricketData.shotTimings
 
   useEffect(() => {
-    // Filter batting options based on balling type
-    if (ballType === 'bouncer') {
-      setFilteredBattingCards([
-        { value: '', label: 'Select Batting' },
-        { value: 'pull', label: 'Pull' },
-        { value: 'uppercut', label: 'UpperCut' }
-      ])
-    } else if (ballType === 'outswinger') {
-      setFilteredBattingCards([
-        { value: '', label: 'Select Batting' },
-        { value: 'coverdrive', label: 'CoverDrive' },
-        { value: 'squarecut', label: 'SquareCut' },
-        { value: 'straight', label: 'Straight' }
-      ])
-    } else if (ballType === 'offcutter') {
-      setFilteredBattingCards([
-        { value: '', label: 'Select Batting' },
-        { value: 'straight', label: 'Straight' },
-        { value: 'flick', label: 'Flick' },
-        { value: 'leglance', label: 'Leglance' }
-      ])
-    } else if (ballType === 'yorker') {
-      setFilteredBattingCards([
-        { value: '', label: 'Select Batting' },
-        { value: 'straight', label: 'Straight' },
-        { value: 'scoop', label: 'Scoop' }
-      ])
-    } else if (ballType === 'offbreak') {
-      setFilteredBattingCards([
-        { value: '', label: 'Select Batting' },
-        { value: 'sweep', label: 'Sweep' },
-        { value: 'leglance', label: 'Leglance' },
-        { value: 'flick', label: 'Flick' }
-      ])
-    } else if (ballType === 'inswinger') {
-      setFilteredBattingCards([
-        { value: '', label: 'Select Batting' },
-        { value: 'straight', label: 'Straight' },
-        { value: 'flick', label: 'Flick' },
-        { value: 'longon', label: 'Long On' }
-      ])
-    } else if (ballType === 'legcutter') {
-      setFilteredBattingCards([
-        { value: '', label: 'Select Batting' },
-        { value: 'squarecut', label: 'SquareCut' },
-        { value: 'coverdrive', label: 'CoverDrive' }
-      ])
-    } else if (ballType === 'slowballer') {
-      setFilteredBattingCards([
-        { value: '', label: 'Select Batting' },
-        { value: 'straight', label: 'Straight' },
-        { value: 'coverdrive', label: 'CoverDrive' }
-      ])
-    } else if (ballType === 'pace') {
-      setFilteredBattingCards([
-        { value: '', label: 'Select Batting' },
-        { value: 'straight', label: 'Straight' },
-        { value: 'squarecut', label: 'SquareCut' },
-        { value: 'coverdrive', label: 'CoverDrive' },
-        { value: 'longon', label: 'Long On' }
-      ])
-    } else if (ballType === 'doosra') {
-      setFilteredBattingCards([
-        { value: '', label: 'Select Batting' },
-        { value: 'sweep', label: 'Sweep' },
-        { value: 'squarecut', label: 'SquareCut' }
-      ])
-    } else {
-      // Default batting options
-      setFilteredBattingCards([
-        { value: '', label: 'Select Batting' },
-        { value: 'straight', label: 'Straight' },
-        { value: 'flick', label: 'Flick' },
-        { value: 'leglance', label: 'Leglance' },
-        { value: 'longon', label: 'Long On' },
-        { value: 'squarecut', label: 'SquareCut' },
-        { value: 'sweep', label: 'Sweep' },
-        { value: 'coverdrive', label: 'CoverDrive' },
-        { value: 'pull', label: 'Pull' },
-        { value: 'scoop', label: 'Scoop' },
-        { value: 'uppercut', label: 'UpperCut' }
-      ])
+    if (winner) {
+      setTimeout(() => {
+        dispatch(updateRuns(0))
+        dispatch(updateTarget(0))
+        dispatch(updateOvers(0))
+        dispatch(updateWickets(0))
+        dispatch(updateBalls(0))
+        setCommentary('')
+      }, 3000)
+      setTimeout(() => {
+        dispatch(updateWinner(''))
+      }, 10000)
     }
-  }, [ballType])
+  }, [winner])
 
-  const shotTimings = [
-    { value: '', label: 'Select Shot Time' },
-    { value: 'early', label: 'Early' },
-    { value: 'good', label: 'Good' },
-    { value: 'perfect', label: 'Perfect' },
-    { value: 'late', label: 'Late' }
-  ]
+  useEffect(() => {
+    const ballingToBattingMap = {
+      bouncer: ['pull', 'uppercut'],
+      outswinger: ['coverdrive', 'squarecut', 'straight'],
+      offcutter: ['straight', 'flick', 'leglance'],
+      yorker: ['straight', 'scoop'],
+      offbreak: ['sweep', 'leglance', 'flick'],
+      inswinger: ['straight', 'flick', 'longon'],
+      legcutter: ['squarecut', 'coverdrive'],
+      slowballer: ['straight', 'coverdrive'],
+      pace: ['straight', 'squarecut', 'coverdrive', 'longon'],
+      doosra: ['sweep', 'squarecut'],
+      default: [
+        'straight',
+        'flick',
+        'leglance',
+        'longon',
+        'squarecut',
+        'sweep',
+        'coverdrive',
+        'pull',
+        'scoop',
+        'uppercut'
+      ]
+    }
+
+    // Set filtered batting cards based on balling type
+    const filteredBattingOptions =
+      ballingToBattingMap[ballType] || ballingToBattingMap.default
+    const filteredBattingCards = filteredBattingOptions.map((option) => ({
+      value: option,
+      label: option.charAt(0).toUpperCase() + option.slice(1) // Capitalize first letter
+    }))
+
+    setFilteredBattingCards([
+      { value: '', label: 'Select Batting' },
+      ...filteredBattingCards
+    ])
+  }, [ballType])
 
   const handleTargetChange = (e) => {
     // Update targetValue whenever the input value changes
@@ -169,16 +113,8 @@ export default function Match () {
 
   const handleSubmit = (e) => {
     e?.preventDefault()
-    const runsOptions = {
-      early: [1, 'w'],
-      good: [2, 3, 4],
-      perfect: [4, 5, 6],
-      late: [1, 'w']
-    }
     const completedBalls = balls + 1
     dispatch(updateBalls(completedBalls))
-    console.log('balls', balls)
-
     let currentRuns = 0
     let currentWickets = 0
     if (ballType || batting) {
@@ -197,66 +133,19 @@ export default function Match () {
       updatedRuns = runs + currentRuns
       dispatch(updateRuns(updatedRuns))
     }
-
-    const newCommentary = generateCommentary(currentRuns)
+    const comment = commentsObj.find((comment) => comment.runs === currentRuns)
+    const newCommentary = comment?.desc
     setCommentary(newCommentary)
     if (newCommentary) {
       speechSynthesis.cancel()
       const cmtry = new SpeechSynthesisUtterance(newCommentary)
       speechSynthesis.speak(cmtry)
     }
-    declareWinner(updatedRuns)
-  }
-  const declareWinner = (updatedRuns) => {
-    if (updatedRuns >= target) {
-      const winner = 'Australia'
-      dispatch(updateWinner(winner))
-    } else if (overs * 6 === balls || wickets === 10) {
-      const winner = 'India'
-      dispatch(updateWinner(winner))
-      dispatch(updateWickets(0))
-      dispatch(updateBalls(0))
-      dispatch(updateWinner(''))
-    }
-  }
-  const generateCommentary = (currentRuns) => {
-    switch (true) {
-      case currentRuns === 1:
-        return 'Excellent line and length.'
-      case currentRuns === 2:
-        return 'Convert ones into twos.'
-      case currentRuns === 3:
-        return 'Excellent effort on the boundary.'
-      case currentRuns === 4:
-        return 'Great shot! Its a boundary.'
-      case currentRuns === 5:
-        return 'Wow! Batsman scored 5 runs!'
-      case currentRuns === 6:
-        return 'It’s a huge hit.'
-      case currentRuns === 'w':
-        return 'Oh no! Its a wicket.'
-      default:
-        return null // or some default value
-    }
-  }
-
-  const handleModalClose = () => {
-    setSuccessModal(false)
+    declareWinner(updatedRuns, overs, balls, wickets, target, dispatch)
   }
 
   return (
     <Container>
-      <Modal show={showSuccessModal} onHide={() => setSuccessModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>WINNER</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>{winner} won the match</Modal.Body>
-        <Modal.Footer>
-          <Button variant='secondary' onClick={handleModalClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
       {winner && (
         <Row className='justify-content-center align-items-center mt-3'>
           <Col>
@@ -378,3 +267,4 @@ export default function Match () {
     </Container>
   )
 }
+export default Match

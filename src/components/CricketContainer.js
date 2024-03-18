@@ -3,7 +3,7 @@ import Cricket from '../pages/Cricket'
 
 const CricketContainer = () => {
   return (
-    <div className='App'>
+    <div>
       <Header />
       <Cricket />
     </div>

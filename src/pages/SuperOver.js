@@ -1,14 +1,5 @@
-import {
-  Col,
-  Container,
-  Row,
-  Image,
-  Form,
-  Button,
-  Modal
-} from 'react-bootstrap'
-import { useState, useContext } from 'react'
-import { CommentaryContext } from '../context/CommentaryContext'
+import { Col, Container, Row, Image, Form, Button } from 'react-bootstrap'
+import { useState, useEffect } from 'react'
 import SuperOverImg from '../assets/images/SuperOver.png'
 import {
   updateRuns,
@@ -19,8 +10,12 @@ import {
   updateWinner
 } from '../redux/action'
 import { useDispatch, useSelector } from 'react-redux'
+import cricketData from '../assets/cricketData/cricketData.json'
+import { commentsObj } from '../utils/comments'
+import { declareWinner } from '../utils/winner'
+import { runsOptions } from '../utils/runs'
 
-export default function SuperOver () {
+const SuperOver = () => {
   const dispatch = useDispatch()
   const [batting, setBatting] = useState('')
   const [shotType, setShotType] = useState('')
@@ -30,25 +25,12 @@ export default function SuperOver () {
   const wickets = useSelector((state) => state.wickets)
   const target = useSelector((state) => state.target)
   const balls = useSelector((state) => state.balls)
-  const { commentary, setCommentary } = useContext(CommentaryContext)
-  const [showSuccessModal, setSuccessModal] = useState(false)
+  const [commentary, setCommentary] = useState('')
   const winner = useSelector((state) => state.winner)
-  const ballingCards = [
-    { value: '', label: 'Select Ball Type' },
-    { value: 'bouncer', label: 'Bouncer' },
-    { value: 'outswinger', label: 'Outswinger' },
-    { value: 'offcutter', label: 'Off Cutter' },
-    { value: 'yorker', label: 'Yorker' },
-    { value: 'offbreak', label: 'Off Break' },
-    { value: 'inswinger', label: 'Inswinger' },
-    { value: 'legcutter', label: 'Leg Cutter' },
-    { value: 'slowballer', label: 'Slower Ball' },
-    { value: 'pace', label: 'Pace' },
-    { value: 'doosra', label: 'Doosra' }
-  ]
+  const ballingCards = cricketData.ballingCards
+  const shotTimings = cricketData.shotTimings
   const [ballType, setRandomBallingType] = useState('')
   const battingCards = useSelector((state) => state.filteredBattingCards)
-  const shotTimings = useSelector((state) => state.shotTimings)
   const handleTargetChange = (e) => {
     dispatch(updateTarget(parseInt(e.target.value, 10)))
     dispatch(updateOvers(parseInt(1, 10)))
@@ -65,15 +47,23 @@ export default function SuperOver () {
     const selectedBallingType = ballingCards[randomIndex].value
     setRandomBallingType(selectedBallingType)
   }
-
+  useEffect(() => {
+    if (winner) {
+      setTimeout(() => {
+        dispatch(updateRuns(0))
+        dispatch(updateTarget(0))
+        dispatch(updateOvers(0))
+        dispatch(updateWickets(0))
+        dispatch(updateBalls(0))
+        setCommentary('')
+      }, 3000)
+      setTimeout(() => {
+        dispatch(updateWinner(''))
+      }, 10000)
+    }
+  }, [winner])
   const handleSubmit = (e) => {
     e?.preventDefault()
-    const runsOptions = {
-      early: [1, 'w'],
-      good: [2, 3, 4],
-      perfect: [4, 5, 6],
-      late: [1, 'w']
-    }
     const targetGiven = parseInt(targetValue, 10)
     const completedBalls = balls + 1
     dispatch(updateBalls(completedBalls))
@@ -102,67 +92,19 @@ export default function SuperOver () {
       dispatch(updateRuns(updatedRuns))
     }
 
-    const newCommentary = generateCommentary(currentRuns)
+    const comment = commentsObj.find((comment) => comment.runs === currentRuns)
+    const newCommentary = `Sudhakar bowled ${ballType} ball, \n Craig played ${shotType} ${batting} shot \n ${comment?.desc} - ${currentRuns} runs.`
     setCommentary(newCommentary)
     if (newCommentary) {
       speechSynthesis.cancel()
       const cmtry = new SpeechSynthesisUtterance(newCommentary)
       speechSynthesis.speak(cmtry)
     }
-    declareWinner(updatedRuns)
-  }
-
-  const declareWinner = (updatedRuns) => {
-    if (updatedRuns >= target) {
-      const winner = 'Australia'
-      dispatch(updateWinner(winner))
-    } else if (overs * 6 === balls || wickets === 10) {
-      const winner = 'India'
-      dispatch(updateWinner(winner))
-      dispatch(updateWickets(0))
-      dispatch(updateBalls(0))
-      dispatch(updateWinner(''))
-    }
-  }
-
-  const generateCommentary = (currentRuns) => {
-    switch (true) {
-      case currentRuns === 1:
-        return `Sudhakar bowled ${ballType} ball, \n Craig played ${shotType} ${batting} shot \n Excellent line and length. - ${currentRuns} runs.`
-      case currentRuns === 2:
-        return `Sudhakar bowled ${ballType} ball, \n Craig played ${shotType} ${batting} shot \n Convert ones into twos. - ${currentRuns} runs.`
-      case currentRuns === 3:
-        return `Sudhakar bowled ${ballType} ball, \n Craig played ${shotType} ${batting} shot \n Excellent effort on the boundary. - ${currentRuns} runs.`
-      case currentRuns === 4:
-        return `Sudhakar bowled ${ballType} ball, \n Craig played ${shotType} ${batting} shot \n Great shot! Its a boundary. - ${currentRuns} runs.`
-      case currentRuns === 5:
-        return `Sudhakar bowled ${ballType} ball, \n Craig played ${shotType} ${batting} shot \n Wow! Batsman scored 5 runs! - ${currentRuns} runs.`
-      case currentRuns === 6:
-        return `Sudhakar bowled ${ballType} ball, \n Craig played ${shotType} ${batting} shot \n It’s a huge hit. - ${currentRuns} runs.`
-      case currentRuns === 'w':
-        return 'Oh no! Its a wicket. Craig lost a wicket'
-      default:
-        return null // or some default value
-    }
-  }
-
-  const handleModalClose = () => {
-    setSuccessModal(false)
+    declareWinner(updatedRuns, overs, balls, wickets, target, dispatch)
   }
 
   return (
     <Container>
-      <Modal show={showSuccessModal} onHide={() => setSuccessModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>WINNER</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>{winner} won the match</Modal.Body>
-        <Modal.Footer>
-          <Button variant='secondary' onClick={handleModalClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
       {winner && (
         <Row className='justify-content-center align-items-center mt-3'>
           <Col>
@@ -256,3 +198,4 @@ export default function SuperOver () {
     </Container>
   )
 }
+export default SuperOver

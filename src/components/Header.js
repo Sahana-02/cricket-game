@@ -1,30 +1,22 @@
-import { styled } from 'styled-components'
+import CricketLogo from '../assets/images/cricket-white32.png'
+import '../assets/css/Styles.css'
 import Settings from '../pages/Settings'
-
-export default function Header () {
-  const StyledHeader = styled.h1`
-    background: #24247c;
-    text-align: center;
-    color: coral;
-    margin: 0;
-    padding: 10px;
-  `
-  const StyledCricImg = styled.img`
-    top: 8px;
-    position: absolute;
-    left: 10px;
-  `
+const Header = () => {
   return (
-    <header>
-      <StyledCricImg
-        src='../cricket-white32.png'
+    <header className='header'>
+      <img
+        className='cric-img'
+        src={CricketLogo}
         alt='cricket logo'
         onClick={() => {
           window.location.href = '/'
         }}
       />
-      <StyledHeader>CricSummit 2021</StyledHeader>
-      <Settings />
+      <h1>CricSummit 2021</h1>
+      <div className="settings-container">
+          <Settings />
+        </div>
     </header>
   )
 }
+export default Header

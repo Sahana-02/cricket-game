@@ -1,0 +1,23 @@
+{
+    "ballingCards": [
+      { "value": "", "label": "Select Ball Type" },
+      { "value": "bouncer", "label": "Bouncer" },
+      { "value": "outswinger", "label": "Outswinger" },
+      { "value": "offcutter", "label": "Off Cutter" },
+      { "value": "yorker", "label": "Yorker" },
+      { "value": "offbreak", "label": "Off Break" },
+      { "value": "inswinger", "label": "Inswinger" },
+      { "value": "legcutter", "label": "Leg Cutter" },
+      { "value": "slowballer", "label": "Slower Ball" },
+      { "value": "pace", "label": "Pace" },
+      { "value": "doosra", "label": "Doosra" }
+    ],
+    "shotTimings": [
+      { "value": "", "label": "Select Shot Time" },
+      { "value": "early", "label": "Early" },
+      { "value": "good", "label": "Good" },
+      { "value": "perfect", "label": "Perfect" },
+      { "value": "late", "label": "Late" }
+    ]
+  }
+  

@@ -2,8 +2,8 @@ import { useRef, useState } from 'react'
 import SettingsIcon from '@mui/icons-material/Settings'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import { styled } from 'styled-components'
 import { Switch } from '@mui/material'
+import '../assets/css/Styles.css'
 
 const Settings = () => {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -11,12 +11,6 @@ const Settings = () => {
 
   const audioRef = useRef()
   const open = Boolean(anchorEl)
-
-  const StyledSettings = styled(SettingsIcon)`
-    position: absolute;
-    top: 10px;
-    right: 23px;
-  `
 
   const handleSettings = (e) => {
     setAnchorEl(e.currentTarget)
@@ -38,8 +32,8 @@ const Settings = () => {
   }
 
   return (
-    <div>
-      <StyledSettings
+    <div className='StyledSettings'>
+      <SettingsIcon
         fontSize='large'
         sx={{ color: 'white' }}
         onClick={handleSettings}
@@ -53,7 +47,6 @@ const Settings = () => {
           'aria-labelledby': 'basic-button'
         }}
       >
-        {/* <MenuItem>Commentary <Switch checked={commentary} onClick={handleComment}/></MenuItem> */}
         <MenuItem>
           Music <Switch checked={music} onClick={handleMusic} />
         </MenuItem>
