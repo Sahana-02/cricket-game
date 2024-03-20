@@ -52,7 +52,7 @@ const Settings = () => {
         </MenuItem>
       </Menu>
       <audio ref={audioRef} preload loop>
-        <source src='../audio/BBC-testCricket.mp3' type='audio/mp3' />
+        <source src='../assets/audio/BBC-testCricket.mp3' type='audio/mp3' />
       </audio>
     </div>
   )
